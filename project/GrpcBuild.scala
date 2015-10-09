@@ -12,7 +12,6 @@ object ProjectBuild extends Build {
       organization  := "io.grpc",
       // TODO Enable after first stable release
       // version       := (s"git describe --long --tags --match v${grpcVersion}" !!).trim.drop(1),
-      version       := (s"git describe --long --tags --match v0.0" !!).trim.drop(1),
       scalaVersion  := "2.11.6",
       scalacOptions ++= Seq("-feature","-deprecation", "-Xlint")
     ))
@@ -27,8 +26,13 @@ object ProjectBuild extends Build {
     .settings(protobufSettings:_*)
     .settings(
       version in protobufConfig := "3.0.0-alpha-3.1",
+      runProtoc in protobufConfig := { args =>
+        println(s"runProtoc ${args.mkString(" ")}")
+        com.github.os72.protocjar.Protoc.runProtoc(args.toArray)
+        0
+      },
       protocOptions in protobufConfig ++= Seq(
-        "--plugin=protoc-gen-java_rpc=/usr/local/bin/protoc-gen-grpc-java",
+        s"--plugin=protoc-gen-java_rpc=protoc-gen-grpc-java-${grpcVersion}.exe",
         "--java_rpc_out=examples/target/scala-2.11/src_managed/main/compiled_protobuf"
       )
     )
