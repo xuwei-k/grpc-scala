@@ -5,7 +5,7 @@ import sbtprotobuf.ProtobufPlugin._
 
 object ProjectBuild extends Build {
 
-  val grpcVersion = "0.7.1"
+  val grpcVersion = "0.9.0"
 
   def mkProject(module: String, name: String) =
     Project(name, file(module), settings = Seq(
@@ -25,7 +25,7 @@ object ProjectBuild extends Build {
   lazy val examples = mkProject("examples", "grpc-scala-examples").dependsOn(library)
     .settings(protobufSettings:_*)
     .settings(
-      version in protobufConfig := "3.0.0-alpha-3.1",
+      version in protobufConfig := "3.0.0-beta-1",
       runProtoc in protobufConfig := { args =>
         println(s"runProtoc ${args.mkString(" ")}")
         com.github.os72.protocjar.Protoc.runProtoc(args.toArray)

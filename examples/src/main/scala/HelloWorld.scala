@@ -45,7 +45,7 @@ object HelloWorldClient {
     println(time / 1000.0)
     println((n / (time / 1000.0)) + " QPS")
     channel.shutdown()
-    channel.awaitTerminated(10, TimeUnit.SECONDS)
+    channel.awaitTermination(10, TimeUnit.SECONDS)
   }
 }
 
@@ -53,8 +53,8 @@ object HelloWorldServer {
   object Greeter extends GreeterGrpc.Greeter {
     override def sayHello(request: HelloRequest, observer: StreamObserver[HelloResponse]) {
       val response = HelloResponse.newBuilder().setMessage(s"Hello ${request.getName}").build()
-      observer.onValue(response)
-      observer.onCompleted
+      observer.onNext(response)
+      observer.onCompleted()
     }
   }
 
