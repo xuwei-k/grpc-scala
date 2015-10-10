@@ -1,11 +1,10 @@
-package io.grpc.scala
 package examples
 
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
 import com.google.common.util.concurrent.{FutureCallback, Futures}
-import io.grpc.examples.helloworld.{GreeterGrpc, HelloRequest, HelloResponse}
+import examples.helloworld.{GreeterGrpc, HelloRequest, HelloResponse}
 import io.grpc.stub.StreamObserver
 
 import scala.concurrent.Await
@@ -44,8 +43,7 @@ object HelloWorldClient {
     println("failures " + failures.get)
     println(time / 1000.0)
     println((n / (time / 1000.0)) + " QPS")
-    channel.shutdown()
-    channel.awaitTermination(10, TimeUnit.SECONDS)
+    channel.shutdown().awaitTermination(10, TimeUnit.SECONDS)
   }
 }
 

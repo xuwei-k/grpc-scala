@@ -1,9 +1,7 @@
-package io.grpc
-
-import _root_.scala.concurrent.{Future, Promise}
+import scala.concurrent.{Future, Promise}
 import com.google.common.util.concurrent.{Futures, FutureCallback, ListenableFuture}
 
-package object scala {
+package object examples {
   implicit class RichListenableFuture[A](self: ListenableFuture[A]) {
     def asFuture: Future[A] = {
       val p = Promise[A]()

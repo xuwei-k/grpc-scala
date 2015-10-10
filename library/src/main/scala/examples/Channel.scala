@@ -1,8 +1,7 @@
-package io.grpc
-package scala
+package examples
 
-import io.grpc.netty.{NegotiationType, NettyChannelBuilder}
 import io.grpc.internal.ManagedChannelImpl
+import io.grpc.netty.{NettyChannelBuilder, NegotiationType}
 
 object Channel {
   def apply(host: String, port: Int): ManagedChannelImpl =

@@ -1,6 +1,6 @@
-package io.grpc
-package scala
+package examples
 
+import io.grpc.ServerServiceDefinition
 import io.grpc.netty.NettyServerBuilder
 import io.grpc.internal.ServerImpl
 
