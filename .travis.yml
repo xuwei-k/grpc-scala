@@ -2,12 +2,17 @@ language: scala
 
 sudo: false
 
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
+scala:
+  - 2.10.6
+  - 2.11.7
+
 jdk:
   - oraclejdk8
-  - oraclejdk7
 
 script:
-  - wget http://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java/0.9.0/protoc-gen-grpc-java-0.9.0-linux-x86_64.exe
-  - mv protoc-gen-grpc-java-0.9.0-linux-x86_64.exe protoc-gen-grpc-java-0.9.0.exe
-  - chmod +x protoc-gen-grpc-java-0.9.0.exe
-  - sbt "compile" "test:compile"
+  - sbt ++$TRAVIS_SCALA_VERSION "grpc-scala/compile" "grpc-scala-examples/compile"
