@@ -29,8 +29,13 @@ object ProjectBuild extends Build {
 
   lazy val examples = mkProject("examples", "grpc-scala-examples").dependsOn(library)
     .settings(
+      /*
       (managedSources in Compile) ++= {
         ((sourceManaged in Compile).value ** "*.java").get
+      },
+*/
+      (generatedTargets in protobufConfig) += {
+        ((javaSource in protobufConfig).value, "*.java")
       },
       includePaths in protobufConfig += { 
         (sourceDirectory in (library, protobufConfig)).value
