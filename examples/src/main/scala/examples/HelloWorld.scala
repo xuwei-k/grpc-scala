@@ -4,7 +4,8 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{CountDownLatch, TimeUnit}
 
 import com.google.common.util.concurrent.{FutureCallback, Futures}
-import examples.helloworld.{GreeterGrpc, HelloRequest, HelloResponse}
+import helloworld.{HelloWorld, GreeterGrpc}
+import helloworld.hello_world.{HelloResponse, HelloRequest}
 import io.grpc.stub.StreamObserver
 
 import scala.concurrent.Await
@@ -15,7 +16,7 @@ object HelloWorldClient {
     val n = args.headOption.fold(1)(_.toInt)
     val channel = Channel("localhost", 50051)
     val stub = GreeterGrpc.newFutureStub(channel)
-    val request = HelloRequest.newBuilder().setName(args.headOption.getOrElse("Giskard")).build()
+    val request = HelloRequest.toJavaProto(HelloRequest(name = args.headOption.getOrElse("Giskard")))
 
     Await.result(stub.sayHello(request).asFuture, 3.seconds)
 
@@ -26,12 +27,12 @@ object HelloWorldClient {
 
     var i = 0
     while(i < n){
-      Futures.addCallback(stub.sayHello(request), new FutureCallback[HelloResponse] {
+      Futures.addCallback(stub.sayHello(request), new FutureCallback[helloworld.HelloWorld.HelloResponse] {
         override def onFailure(t: Throwable): Unit = {
           failures.incrementAndGet()
           latch.countDown()
         }
-        override def onSuccess(result: HelloResponse): Unit = {
+        override def onSuccess(result: helloworld.HelloWorld.HelloResponse): Unit = {
           latch.countDown()
         }
       })
@@ -49,8 +50,8 @@ object HelloWorldClient {
 
 object HelloWorldServer {
   object Greeter extends GreeterGrpc.Greeter {
-    override def sayHello(request: HelloRequest, observer: StreamObserver[HelloResponse]) {
-      val response = HelloResponse.newBuilder().setMessage(s"Hello ${request.getName}").build()
+    override def sayHello(request: HelloWorld.HelloRequest, observer: StreamObserver[HelloWorld.HelloResponse]): Unit = {
+      val response = HelloResponse.toJavaProto(HelloResponse(message = s"Hello ${request.getName}"))
       observer.onNext(response)
       observer.onCompleted()
     }
