@@ -15,4 +15,4 @@ jdk:
   - oraclejdk8
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION "grpc-scala/compile" "grpc-scala-examples/compile" clean "grpc-scala/compile" "grpc-scala-examples/compile"
+  - sbt ++$TRAVIS_SCALA_VERSION "library/compile" "examples/compile" clean "library/compile" "examples/compile"

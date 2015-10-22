@@ -17,14 +17,14 @@ object ProjectBuild extends Build {
     ))
   }
 
-  def mkProject(module: String, name: String) =
-    Project(name, file(module)).settings(
+  def mkProject(module: String) =
+    Project(module, file(module)).settings(
       organization  := "io.grpc",
       scalaVersion  := "2.11.6",
       scalacOptions ++= Seq("-feature","-deprecation", "-Xlint")
     )
 
-  lazy val library = mkProject("library", "grpc-scala").settings(
+  lazy val library = mkProject("library").settings(
     libraryDependencies += "io.grpc" % "grpc-all" % grpcVersion,
     protobufSettings,
     myProtocSettings
@@ -45,11 +45,11 @@ object ProjectBuild extends Build {
   }
 
   lazy val forkProj = mkProject(
-    "fork", "fork"
+    "fork"
   ).settings(
     resolvers += Resolver.mavenLocal,
     libraryDependencies += "com.github.os72" % "protoc-jar" % "3.0.0-b1"
-      //libraryDependencies += "com.github.os72" % "protoc-jar" % "3.0.0-b2-SNAPSHOT"
+//    libraryDependencies += "com.github.os72" % "protoc-jar" % "3.0.0-b2-SNAPSHOT"
   )
 
   def forkRun(args: List[String], path: Seq[File], log: Logger) = {
@@ -65,11 +65,16 @@ object ProjectBuild extends Build {
     }
   }
 
-  lazy val examples = mkProject("examples", "grpc-scala-examples").dependsOn(library)
+  private val grpcCodeDir = SettingKey[File]("grpc_compiled_protobuf")
+
+  lazy val examples: Project = mkProject("examples").dependsOn(library)
     .settings(
-      protobufSettings,
+      sbtprotobuf.ProtobufPlugin.protobufSettings,
       myProtocSettings,
-      (runProtoc in protobufConfig) := { args0 =>
+      grpcCodeDir := {
+        (sourceManaged in Compile).value / "grpc_code"
+      },
+      (sbtprotobuf.ProtobufPlugin.runProtoc in protobufConfig) := { args0 =>
         IO.withTemporaryDirectory{ dir =>
           val exeURL = grpcExe()
           val exeName = exeURL.split('/').last
@@ -79,16 +84,13 @@ object ProjectBuild extends Build {
           exe.setExecutable(true)
           val args = args0 ++ Array(
             s"--plugin=protoc-gen-java_rpc=${exe.getAbsolutePath}",
-            s"--java_rpc_out=${(sourceManaged in Compile).value}/compiled_protobuf"
+            s"--java_rpc_out=${((sourceManaged in Compile).value / "compiled_protobuf").getAbsolutePath}"
           )
           val path = Attributed.data((fullClasspath in (forkProj, Compile)).value)
           forkRun(args.toList, path, streams.value.log)
         }
       },
-      (generatedTargets in protobufConfig) += {
-        ((javaSource in protobufConfig).value, "*.java")
-      },
-      includePaths in protobufConfig += { 
+      includePaths in protobufConfig += {
         (sourceDirectory in (library, protobufConfig)).value
       }
     )
