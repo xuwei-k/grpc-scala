@@ -10,8 +10,8 @@ object ProjectBuild extends Build {
   val myProtocSettings = {
     inConfig(protobufConfig)(Seq(
       runProtoc := { args =>
-        val path = Attributed.data((fullClasspath in (forkProj, Compile)).value)
-        forkRun(args.toList, path, streams.value.log)
+        println(s"runProtoc ${args.mkString(" ")}")
+        com.github.os72.protocjar.Protoc.runProtoc("-v300" +: args.toArray)
       },
       version := "3.0.0-beta-1"
     ))
@@ -44,36 +44,10 @@ object ProjectBuild extends Build {
     s"http://repo1.maven.org/maven2/io/grpc/${artifactId}/${grpcVersion}/${artifactId}-${grpcVersion}-${os}.exe"
   }
 
-  lazy val forkProj = mkProject(
-    "fork"
-  ).settings(
-    resolvers += Resolver.mavenLocal,
-    libraryDependencies += "com.github.os72" % "protoc-jar" % "3.0.0-b1"
-//    libraryDependencies += "com.github.os72" % "protoc-jar" % "3.0.0-b2-SNAPSHOT"
-  )
-
-  def forkRun(args: List[String], path: Seq[File], log: Logger) = {
-    println(s"runProtoc ${args.mkString(" ")}")
-    new sbt.ForkRun(ForkOptions()).run(
-      "com.github.os72.protocjar.Protoc",
-      path,
-      "-v300" :: args.toList,
-      log
-    ) match {
-      case Some(e) => sys.error(e)
-      case None => 0
-    }
-  }
-
-  private val grpcCodeDir = SettingKey[File]("grpc_compiled_protobuf")
-
   lazy val examples: Project = mkProject("examples").dependsOn(library)
     .settings(
       sbtprotobuf.ProtobufPlugin.protobufSettings,
       myProtocSettings,
-      grpcCodeDir := {
-        (sourceManaged in Compile).value / "grpc_code"
-      },
       (sbtprotobuf.ProtobufPlugin.runProtoc in protobufConfig) := { args0 =>
         IO.withTemporaryDirectory{ dir =>
           val exeURL = grpcExe()
@@ -86,8 +60,8 @@ object ProjectBuild extends Build {
             s"--plugin=protoc-gen-java_rpc=${exe.getAbsolutePath}",
             s"--java_rpc_out=${((sourceManaged in Compile).value / "compiled_protobuf").getAbsolutePath}"
           )
-          val path = Attributed.data((fullClasspath in (forkProj, Compile)).value)
-          forkRun(args.toList, path, streams.value.log)
+          println(s"runProtoc ${args.mkString(" ")}")
+          com.github.os72.protocjar.Protoc.runProtoc("-v300" +: args.toArray)
         }
       },
       includePaths in protobufConfig += {
