@@ -16,3 +16,4 @@ jdk:
 
 script:
   - sbt ++$TRAVIS_SCALA_VERSION "library/compile" "examples/compile" clean "library/compile" "examples/compile"
+  - sbt ++$TRAVIS_SCALA_VERSION compile clean compile clean compile clean compile
