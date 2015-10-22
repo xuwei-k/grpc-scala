@@ -61,7 +61,10 @@ object ProjectBuild extends Build {
             s"--java_rpc_out=${((sourceManaged in Compile).value / "compiled_protobuf").getAbsolutePath}"
           )
           println(s"runProtoc ${args.mkString(" ")}")
-          com.github.os72.protocjar.Protoc.runProtoc("-v300" +: args.toArray)
+          Thread.sleep(1000)
+          val r = com.github.os72.protocjar.Protoc.runProtoc("-v300" +: args.toArray)
+          Thread.sleep(1000)
+          r
         }
       },
       includePaths in protobufConfig += {
