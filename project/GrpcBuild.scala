@@ -14,6 +14,7 @@ object ProjectBuild extends Build {
         val path = Attributed.data((fullClasspath in (forkProj, Compile)).value)
         forkRun(args.toList, path, streams.value.log)
       },
+      //scalapbVersion := "0.5.14",
       version := "3.0.0-beta-1"
     ))
   }
