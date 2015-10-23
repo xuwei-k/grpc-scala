@@ -53,9 +53,13 @@ object ProjectBuild extends Build {
 //    libraryDependencies += "com.github.os72" % "protoc-jar" % "3.0.0-b2-SNAPSHOT"
   )
 
-  def forkRun(args: List[String], path: Seq[File], log: Logger) = {
+  def forkRun(args: List[String], path: Seq[File], log: Logger) = IO.withTemporaryDirectory{ dir =>
     println(s"runProtoc ${args.mkString(" ")}")
-    new sbt.ForkRun(ForkOptions()).run(
+    val opt = ForkOptions(
+      workingDirectory = Some(dir),
+      runJVMOptions = scala.sys.process.javaVmArguments
+    )
+    new sbt.ForkRun(opt).run(
       "com.github.os72.protocjar.Protoc",
       path,
       "-v300" :: args.toList,
