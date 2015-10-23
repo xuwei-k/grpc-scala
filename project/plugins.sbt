@@ -5,7 +5,7 @@
 addSbtPlugin("com.trueaccord.scalapb" % "sbt-scalapb" % "0.5.14")
 
 val plugins = Project("plugins", file(".")).dependsOn(
-  ProjectRef(uri("git://github.com/xuwei-k/ScalaPB.git#bb1098aaef64e8bd5d95d9f59bf019195d9349e8"), "compilerPlugin")
+  ProjectRef(uri("git://github.com/xuwei-k/ScalaPB.git#bb4d86801c91812fc8aeb2ed1045f752a4afe0cc"), "compilerPlugin")
 )
 
 fullResolvers ~= {_.filterNot(_.name == "jcenter")} // https://github.com/sbt/sbt/issues/2217
