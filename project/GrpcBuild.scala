@@ -56,7 +56,6 @@ object ProjectBuild extends Build {
   )
 
   def forkRun(args: List[String], path: Seq[File], log: Logger) = IO.withTemporaryDirectory{ dir =>
-    println(s"runProtoc ${args.mkString(" ")}")
     val opt = ForkOptions(
       workingDirectory = Some(dir),
       runJVMOptions = scala.sys.process.javaVmArguments
