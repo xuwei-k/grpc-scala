@@ -21,6 +21,7 @@ object ProjectBuild extends Build {
     Project(module, file(module)).settings(
       organization  := "io.grpc",
       scalaVersion  := "2.11.6",
+      fullResolvers ~= {_.filterNot(_.name == "jcenter")}, // https://github.com/sbt/sbt/issues/2217
       scalacOptions ++= Seq("-feature","-deprecation", "-Xlint")
     )
 
