@@ -15,5 +15,5 @@ jdk:
   - oraclejdk8
 
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION "library/compile" "examples/compile" clean "library/compile" "examples/compile"
-  - sbt ++$TRAVIS_SCALA_VERSION compile clean compile clean compile clean compile
+  - sbt -J-Xms1G -J-Xmx1G ++$TRAVIS_SCALA_VERSION "library/compile" "examples/compile" clean "library/compile" "examples/compile"
+  - sbt -J-Xms1G -J-Xmx1G ++$TRAVIS_SCALA_VERSION compile clean compile clean compile clean compile
