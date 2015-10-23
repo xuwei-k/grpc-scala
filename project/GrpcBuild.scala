@@ -9,6 +9,7 @@ object ProjectBuild extends Build {
 
   val myProtocSettings = {
     inConfig(protobufConfig)(Seq(
+      (managedClasspath in protobufConfig) := Classpaths.managedJars(Compile, classpathTypes.value, update.value),
       runProtoc := { args =>
         val path = Attributed.data((fullClasspath in (forkProj, Compile)).value)
         forkRun(args.toList, path, streams.value.log)
