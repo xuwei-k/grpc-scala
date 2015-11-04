@@ -37,5 +37,8 @@ package helloworld;
 service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloResponse) {}
+  rpc xxx (stream AAA) returns (BBB) {}
+  rpc yyy (CCC) returns (stream DDD) {}
+  rpc zzz (stream EEE) returns (stream FFF) {}
 }
 
